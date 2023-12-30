@@ -1,0 +1,189 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model app_user {
+  user_id           Int         @id @default(autoincrement())
+  given_names       String      @db.VarChar(30)
+  last_names        String      @db.VarChar(30)
+  government_id     String      @unique @db.VarChar(15)
+  email             String      @unique @db.VarChar(50)
+  cell_phone_number String      @db.VarChar(20)
+  dob               DateTime    @db.Date
+  created_at        DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime    @db.Timestamptz(6)
+  client            client?
+  trainer           trainer?
+  user_role         user_role[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model client {
+  client_id        Int                @id
+  is_active        Boolean
+  age              Int                @db.SmallInt
+  jump_test        Int?               @db.SmallInt
+  blood_pressure   Int?               @db.SmallInt
+  triglycerides    Int?               @db.SmallInt
+  blood_glucose    Int?               @db.SmallInt
+  cholesterol      Int?               @db.SmallInt
+  created_at       DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime           @db.Timestamptz(6)
+  app_user         app_user           @relation(fields: [client_id], references: [user_id], onDelete: Cascade)
+  client_athlete   client_athlete?
+  client_injured   client_injured?
+  exercise_session exercise_session[]
+  injury_history   injury_history[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model client_athlete {
+  client_athlete_id    Int                    @id
+  sport                String?                @db.VarChar(30)
+  objective            String?
+  created_at           DateTime               @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime               @db.Timestamptz(6)
+  client               client                 @relation(fields: [client_athlete_id], references: [client_id], onDelete: Cascade)
+  clinical_examination clinical_examination[]
+  strength_test        strength_test[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model client_injured {
+  client_injured_id Int              @id
+  injury_type       String?          @db.VarChar(30)
+  sport_type        String?          @db.VarChar(30)
+  created_at        DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime         @db.Timestamptz(6)
+  client            client           @relation(fields: [client_injured_id], references: [client_id], onDelete: Cascade)
+  injury_session    injury_session[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model clinical_examination {
+  record_id         Int            @id @default(autoincrement())
+  client_athlete_id Int
+  title             String         @db.VarChar(50)
+  description       String
+  created_at        DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime       @db.Timestamptz(6)
+  client_athlete    client_athlete @relation(fields: [client_athlete_id], references: [client_athlete_id], onDelete: Cascade)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model exercise {
+  exercise_id     Int               @id @default(autoincrement())
+  name            String            @unique @db.VarChar(50)
+  description     String?
+  link            String?           @db.VarChar(250)
+  created_at      DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime          @db.Timestamptz(6)
+  exercise_object exercise_object[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model exercise_object {
+  object_id        Int              @id @default(autoincrement())
+  session_id       Int
+  exercise_id      Int
+  series_num       Int?             @db.SmallInt
+  weight           Int?             @db.SmallInt
+  reps             Int?             @db.SmallInt
+  total_wheight    Int?             @db.SmallInt
+  created_at       DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime         @db.Timestamptz(6)
+  exercise         exercise         @relation(fields: [exercise_id], references: [exercise_id], onDelete: Cascade)
+  exercise_session exercise_session @relation(fields: [session_id], references: [session_id], onDelete: Cascade)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model exercise_session {
+  session_id      Int               @id @default(autoincrement())
+  client_id       Int
+  trainer_name    String            @db.VarChar(30)
+  created_at      DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime          @db.Timestamptz(6)
+  exercise_object exercise_object[]
+  client          client            @relation(fields: [client_id], references: [client_id], onDelete: Cascade)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model injury_history {
+  record_id   Int      @id @default(autoincrement())
+  client_id   Int
+  title       String   @db.VarChar(50)
+  description String
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @db.Timestamptz(6)
+  client      client   @relation(fields: [client_id], references: [client_id], onDelete: Cascade)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model injury_session {
+  session_id           Int            @id @default(autoincrement())
+  client_injured_id    Int
+  trainer_name         String         @db.VarChar(30)
+  activity_intolerance String?        @db.VarChar(100)
+  functional_diagnosis String?        @db.VarChar(100)
+  movement_goals       String?        @db.VarChar(100)
+  believes             String?        @db.VarChar(100)
+  clinical_diagnosis   String?
+  description          String?
+  created_at           DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime       @db.Timestamptz(6)
+  client_injured       client_injured @relation(fields: [client_injured_id], references: [client_injured_id], onDelete: Cascade)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model role {
+  role_id    Int         @id @default(autoincrement())
+  code_name  String      @unique @db.VarChar(30)
+  ui_name    String      @unique @db.VarChar(50)
+  created_at DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at DateTime    @db.Timestamptz(6)
+  user_role  user_role[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model strength_test {
+  record_id         Int            @id @default(autoincrement())
+  client_athlete_id Int
+  trainer_name      String         @db.VarChar(30)
+  press_banca       Float[]        @db.Real
+  dominadas         Float[]        @db.Real
+  sentadilla        Float[]        @db.Real
+  peso_muerto       Float[]        @db.Real
+  cmj               Float[]        @db.Real
+  sj                Float[]        @db.Real
+  ie                Float[]        @db.Real
+  observaciones     String?
+  created_at        DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime       @db.Timestamptz(6)
+  client_athlete    client_athlete @relation(fields: [client_athlete_id], references: [client_athlete_id], onDelete: Cascade)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model trainer {
+  trainer_id Int      @id
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  app_user   app_user @relation(fields: [trainer_id], references: [user_id], onDelete: Cascade)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_role {
+  user_id    Int
+  role_id    Int
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  role       role     @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
+  app_user   app_user @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@id([user_id, role_id])
+}

@@ -1,0 +1,14 @@
+DROP TABLE IF EXISTS strength_test;
+DROP TABLE IF EXISTS clinical_examination;
+DROP TABLE IF EXISTS client_athlete;
+DROP TABLE IF EXISTS injury_session;
+DROP TABLE IF EXISTS client_injured;
+DROP TABLE IF EXISTS injury_history;
+DROP TABLE IF EXISTS exercise_object;
+DROP TABLE IF EXISTS exercise;
+DROP TABLE IF EXISTS exercise_session;
+DROP TABLE IF EXISTS client;
+DROP TABLE IF EXISTS trainer;
+DROP TABLE IF EXISTS user_role;
+DROP TABLE IF EXISTS role;
+DROP TABLE IF EXISTS app_user;

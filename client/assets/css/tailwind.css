@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.login-button-base {
+  @apply h-12 bg-red-500 text-white text-sm font-semibold uppercase tracking-wide;
+}
+
+.login-button-top {
+  @apply h-12 w-1/2 uppercase tracking-wide overflow-hidden transition ease-out duration-300;
+}
+
+.base-heading-link {
+  @apply font-bold tracking-wide hover:text-red-500;
+}
+.router-link-active {
+  @apply text-red-500 border-red-500;
+}
+
+.header-icon {
+  @apply h-5 sm:h-6;
+}
+
+.menu-button {
+  @apply stroke-1 stroke-stone-700 text-stone-700 h-8 sm:h-12 mx-3 hover:stroke-stone-900 hover:text-stone-900;
+}
+
+.external-svg {
+  @apply fill-current text-white;
+}
+
+.footer-icon {
+  @apply external-svg h-5 sm:h-6 mx-3 sm:mx-4 hover:text-black;
+}
+
+/* ==================== remove blue blackground when tapping in mobile ==================== */
+
+input,
+textarea,
+button,
+select,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ==================== form validation ==================== */
+
+/* input:valid {
+  background-color: white;
+} */
+
+input:invalid {
+  border-color: lightpink;
+}
+
+/* ==================== scrollbar ==================== */
+
+/* width */
+::-webkit-scrollbar {
+  @apply w-2;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  @apply bg-stone-200;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  @apply bg-stone-300 rounded-full;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-stone-400;
+}
